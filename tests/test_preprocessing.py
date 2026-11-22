@@ -94,3 +94,96 @@ def test_feature_schema_is_consistent(tmp_path, feature_names):
 
 def test_feature_matrix_has_43_columns_in_schema_order(sample_flows, feature_names):
     _, final = feature_names
+    matrix = feature_matrix(sample_flows, final)
+    assert matrix.shape == (len(sample_flows), 43)
+    np.testing.assert_allclose(matrix[:, 0], sample_flows[final[0]].to_numpy())
+    np.testing.assert_allclose(matrix[:, -1], sample_flows[final[-1]].to_numpy())
+    assert matrix.dtype == np.float64
+    matrix[0, 0] = -9999
+    assert sample_flows[final[0]].iloc[0] != -9999
+
+
+@pytest.mark.parametrize("invalid", [np.nan, np.inf, -np.inf])
+def test_feature_matrix_rejects_nonfinite(sample_flows, feature_names, invalid):
+    _, final = feature_names
+    flows = sample_flows.copy()
+    flows.loc[0, final[0]] = invalid
+    with pytest.raises(ValueError, match="missing or infinite"):
+        feature_matrix(flows, final)
+
+
+def test_feature_matrix_rejects_missing_or_duplicate_names(sample_flows, feature_names):
+    _, final = feature_names
+    with pytest.raises(ValueError, match="Expected 43 unique"):
+        feature_matrix(sample_flows, final[:-1] + [final[0]])
+    with pytest.raises(ValueError, match="Missing model features"):
+        feature_matrix(sample_flows.drop(columns=final[-1]), final)
+
+
+def test_source_scaler_and_transform_match_reference(sample_flows, feature_names):
+    _, final = feature_names
+    train = sample_flows.iloc[:80]
+    scaler = fit_source_scaler(train, final)
+    x_raw = feature_matrix(train, final)
+    x_before = x_raw.copy()
+    special_idx = final.index(SPECIAL_FEATURE)
+    x_before[:, special_idx] = np.arcsinh(x_before[:, special_idx])
+
+    np.testing.assert_allclose(scaler.mean_, x_before.mean(axis=0), rtol=1e-12)
+    expected = np.arcsinh(scaler.transform(x_before)).astype(np.float32)
+    actual = transform_features(train, final, scaler)
+    np.testing.assert_allclose(actual, expected, rtol=1e-6, atol=1e-6)
+    assert actual.shape == (80, 43)
+    assert actual.dtype == np.float32
+    assert np.isfinite(actual).all()
+
+
+def test_target_transform_does_not_refit_scaler(sample_flows, feature_names):
+    _, final = feature_names
+    scaler = fit_source_scaler(sample_flows.iloc[:70], final)
+    source_mean = scaler.mean_.copy()
+    source_scale = scaler.scale_.copy()
+    shifted = sample_flows.iloc[70:].copy()
+    shifted.loc[:, final[0]] *= 100
+    output = transform_features(shifted, final, scaler)
+
+    assert output.shape == (50, 43)
+    np.testing.assert_array_equal(scaler.mean_, source_mean)
+    np.testing.assert_array_equal(scaler.scale_, source_scale)
+
+
+def test_source_split_keeps_duplicate_groups_separate(sample_flows, feature_names):
+    raw, _ = feature_names
+    doubled = pd.concat([sample_flows, sample_flows], ignore_index=True)
+    train, validation, test = split_source(doubled, raw, seed=13)
+
+    def group_set(frame):
+        return set(pd.util.hash_pandas_object(frame[raw], index=False).to_numpy())
+
+    assert len(train) + len(validation) + len(test) == len(doubled)
+    assert group_set(train).isdisjoint(group_set(validation))
+    assert group_set(train).isdisjoint(group_set(test))
+    assert group_set(validation).isdisjoint(group_set(test))
+    assert abs(len(train) / len(doubled) - 0.70) < 0.12
+    again = split_source(doubled, raw, seed=13)
+    for first, second in zip((train, validation, test), again):
+        pd.testing.assert_frame_equal(first, second)
+
+
+def test_target_split_removes_duplicate_feature_rows(sample_flows, feature_names):
+    raw, final = feature_names
+    # Changing only an excluded raw feature creates distinct raw groups
+    # that still have identical model inputs.
+    altered = sample_flows.copy()
+    altered[REMOVED_FEATURES[0]] += 1000
+    target = pd.concat([sample_flows, altered], ignore_index=True)
+    adaptation, development = split_target(target, raw, final, seed=786)
+
+    assert len(adaptation) > 0 and len(development) > 0
+    adapt_hashes = set(pd.util.hash_pandas_object(adaptation[final], index=False))
+    dev_hashes = pd.util.hash_pandas_object(development[final], index=False)
+    assert dev_hashes.is_unique
+    assert adapt_hashes.isdisjoint(set(dev_hashes))
+    again_adapt, again_dev = split_target(target, raw, final, seed=786)
+    pd.testing.assert_frame_equal(adaptation, again_adapt)
+    pd.testing.assert_frame_equal(development, again_dev)
