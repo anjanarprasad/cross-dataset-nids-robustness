@@ -1,4 +1,4 @@
-"""Neural feature encoders used in the CSC786 intrusion detection experiments."""
+"""Neural feature encoders used in the  intrusion detection experiments."""
 
 from pathlib import Path
 from typing import Sequence
