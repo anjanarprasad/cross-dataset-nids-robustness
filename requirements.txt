@@ -1,0 +1,11 @@
+# Dependencies for the CSC786 notebooks and reusable Python modules.
+# Python 3.11 or later is recommended.
+
+numpy>=1.26,<3.0
+pandas>=2.2,<3.0
+scikit-learn>=1.5,<2.0
+torch>=2.4,<3.0
+matplotlib>=3.8,<4.0
+joblib>=1.4,<2.0
+ipython>=8.0,<10.0
+pytest>=8.0,<10.0
