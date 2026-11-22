@@ -1,0 +1,5 @@
+RL_Method,Representation,Mean_Macro_F1,Std_Macro_F1,Mean_Binary_PR_AUC,Mean_Exact_Accuracy
+Diversity_Aware_RL,Engineered_43D,0.5612,0.0246,0.9431,0.9190
+Diversity_Aware_RL,Neural_75D,0.5857,0.0182,0.9523,0.9270
+Standard_RL,Engineered_43D,0.4972,0.0962,0.9373,0.8899
+Standard_RL,Neural_75D,0.5006,0.0973,0.9539,0.8963
