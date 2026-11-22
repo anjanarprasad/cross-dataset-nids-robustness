@@ -1,0 +1,60 @@
+experiment,variant,metric,value,ci_lower,ci_upper,scope,aggregation,unit,n_records,notes
+target_label_selection,random,macro_f1,0.4986,,,CIC development,seed_51,,49720,"1,000 reviewed CIC labels; 50 shared starting records"
+target_label_selection,random,macro_f1,0.3756,,,CIC development,seed_73,,49720,"1,000 reviewed CIC labels; 50 shared starting records"
+target_label_selection,random,macro_f1,0.4179,,,CIC development,seed_97,,49720,"1,000 reviewed CIC labels; 50 shared starting records"
+target_label_selection,random,mean_macro_f1,.4307,,,CIC development,mean_3_seeds,,49720,"Seeds 51, 73, 97"
+target_label_selection,random,mean_binary_pr_auc,0.9463,,,CIC development,mean_3_seeds,,49720,"Seeds 51, 73, 97"
+target_label_selection,random,mean_attack_category_coverage,7.00,,,CIC development,mean_3_seeds,categories,49720,"Selected target labels; seeds 51, 73, 97"
+target_label_selection,standard_rl,macro_f1,0.5137,,,CIC development,seed_51,,49720,"1,000 reviewed CIC labels; 50 shared starting records"
+target_label_selection,standard_rl,macro_f1,0.5907,,,CIC development,seed_73,,49720,"1,000 reviewed CIC labels; 50 shared starting records"
+target_label_selection,standard_rl,macro_f1,0.3973,,,CIC development,seed_97,,49720,"1,000 reviewed CIC labels; 50 shared starting records"
+target_label_selection,standard_rl,mean_macro_f1,.5006,,,CIC development,mean_3_seeds,,49720,"Seeds 51, 73, 97"
+target_label_selection,standard_rl,mean_binary_pr_auc,0.9539,,,CIC development,mean_3_seeds,,49720,"Seeds 51, 73, 97"
+target_label_selection,standard_rl,mean_attack_category_coverage,8.33,,,CIC development,mean_3_seeds,categories,49720,"Selected target labels; seeds 51, 73, 97"
+target_label_selection,diversity_rl,macro_f1,0.5664,,,CIC development,seed_51,,49720,"1,000 reviewed CIC labels; 50 shared starting records"
+target_label_selection,diversity_rl,macro_f1,0.6025,,,CIC development,seed_73,,49720,"1,000 reviewed CIC labels; 50 shared starting records"
+target_label_selection,diversity_rl,macro_f1,0.5881,,,CIC development,seed_97,,49720,"1,000 reviewed CIC labels; 50 shared starting records"
+target_label_selection,diversity_rl,mean_macro_f1,.5857,,,CIC development,mean_3_seeds,,49720,"Seeds 51, 73, 97"
+target_label_selection,diversity_rl,mean_binary_pr_auc,0.9523,,,CIC development,mean_3_seeds,,49720,"Seeds 51, 73, 97"
+target_label_selection,diversity_rl,mean_attack_category_coverage,9.33,,,CIC development,mean_3_seeds,categories,49720,"Selected target labels; seeds 51, 73, 97"
+feature_ablation,diversity_rl_43_features,mean_macro_f1,0.5612,,,CIC development,mean_3_seeds,,49720,75 features = 43 flow features + 32-dimensional neural embedding
+feature_ablation,diversity_rl_75_features,mean_macro_f1,0.5857,,,CIC development,mean_3_seeds,,49720,75 features = 43 flow features + 32-dimensional neural embedding
+feature_ablation,standard_rl_43_features,mean_macro_f1,0.4972,,,CIC development,mean_3_seeds,,49720,75 features = 43 flow features + 32-dimensional neural embedding
+feature_ablation,standard_rl_75_features,mean_macro_f1,0.5006,,,CIC development,mean_3_seeds,,49720,75 features = 43 flow features + 32-dimensional neural embedding
+holdout,teacher_fp32,record_count,20000,,,Frozen CIC holdout (FP32 teacher only),single,records,20000,"Same CIC collection; distinct, signature-disjoint held-out records"
+holdout,teacher_fp32,benign_records,17583,,,Frozen CIC holdout (FP32 teacher only),single,records,20000,"Same CIC collection; distinct, signature-disjoint held-out records"
+holdout,teacher_fp32,attack_records,2417,,,Frozen CIC holdout (FP32 teacher only),single,records,20000,"Same CIC collection; distinct, signature-disjoint held-out records"
+holdout,teacher_fp32,macro_f1,0.545968,,,Frozen CIC holdout (FP32 teacher only),single,,20000,"Same CIC collection; distinct, signature-disjoint held-out records"
+holdout,teacher_fp32,attack_type_accuracy,0.917667,,,Frozen CIC holdout (FP32 teacher only),single,,20000,"Same CIC collection; distinct, signature-disjoint held-out records"
+holdout,teacher_fp32,binary_pr_auc,0.947813,,,Frozen CIC holdout (FP32 teacher only),single,,20000,"Same CIC collection; distinct, signature-disjoint held-out records"
+holdout,teacher_fp32,binary_roc_auc,0.977146,,,Frozen CIC holdout (FP32 teacher only),single,,20000,"Same CIC collection; distinct, signature-disjoint held-out records"
+holdout,teacher_fp32,precision_top_12_5pct,0.905600,,,Frozen CIC holdout (FP32 teacher only),single,,20000,"Same CIC collection; distinct, signature-disjoint held-out records"
+holdout,teacher_fp32,recall_top_12_5pct,0.936698,,,Frozen CIC holdout (FP32 teacher only),single,,20000,"Same CIC collection; distinct, signature-disjoint held-out records"
+compression,teacher_fp32,macro_f1,0.56636,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,teacher_fp32,binary_pr_auc,0.94596,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,teacher_fp32,serialized_artifact_size,34666,,,Deployment artifact comparison,single,bytes,,Combined serialized files; excludes runtime and dependencies
+compression,teacher_fp32,batch_256_latency,21.91,,,Colab CPU benchmark,single,milliseconds,,Measured end-to-end time; hardware dependent
+compression,teacher_int8,macro_f1,0.56777,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,teacher_int8,binary_pr_auc,0.94557,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,teacher_int8,serialized_artifact_size,21706,,,Deployment artifact comparison,single,bytes,,Combined serialized files; excludes runtime and dependencies
+compression,teacher_int8,batch_256_latency,24.49,,,Colab CPU benchmark,single,milliseconds,,Measured end-to-end time; hardware dependent
+compression,pruned_32,macro_f1,0.57341,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,pruned_32,binary_pr_auc,0.94453,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,pruned_32,serialized_artifact_size,24646,,,Deployment artifact comparison,single,bytes,,Combined serialized files; excludes runtime and dependencies
+compression,pruned_32,batch_256_latency,21.47,,,Colab CPU benchmark,single,milliseconds,,Measured end-to-end time; hardware dependent
+compression,pruned_16,macro_f1,0.58805,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,pruned_16,binary_pr_auc,0.95864,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,pruned_16,serialized_artifact_size,19654,,,Deployment artifact comparison,single,bytes,,Combined serialized files; excludes runtime and dependencies
+compression,pruned_16,batch_256_latency,20.06,,,Colab CPU benchmark,single,milliseconds,,Measured end-to-end time; hardware dependent
+compression,distilled_32,macro_f1,0.58077,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,distilled_32,binary_pr_auc,0.95083,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,distilled_32,serialized_artifact_size,24682,,,Deployment artifact comparison,single,bytes,,Combined serialized files; excludes runtime and dependencies
+compression,distilled_32,batch_256_latency,22.27,,,Colab CPU benchmark,single,milliseconds,,Measured end-to-end time; hardware dependent
+compression,distilled_16,macro_f1,0.58589,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,distilled_16,binary_pr_auc,0.95122,,,CIC development,single,,49720,"Seed-51 selected 1,000 target labels; development evaluation only"
+compression,distilled_16,serialized_artifact_size,19690,,,Deployment artifact comparison,single,bytes,,Combined serialized files; excludes runtime and dependencies
+compression,distilled_16,batch_256_latency,20.37,,,Colab CPU benchmark,single,milliseconds,,Measured end-to-end time; hardware dependent
+paired_bootstrap,pruned_16,macro_f1_difference,0.02169,0.01476,0.02968,CIC development,400_category_stratified_resamples,,49720,"Compared with teacher FP32; post-selection development intervals, not independent holdout validation"
+paired_bootstrap,pruned_16,binary_pr_auc_difference,0.01268,0.00918,0.01656,CIC development,400_category_stratified_resamples,,49720,"Compared with teacher FP32; post-selection development intervals, not independent holdout validation"
+paired_bootstrap,distilled_16,macro_f1_difference,0.01952,0.01229,0.02649,CIC development,400_category_stratified_resamples,,49720,"Compared with teacher FP32; post-selection development intervals, not independent holdout validation"
+paired_bootstrap,distilled_16,binary_pr_auc_difference,0.00526,0.00166,0.00911,CIC development,400_category_stratified_resamples,,49720,"Compared with teacher FP32; post-selection development intervals, not independent holdout validation"
