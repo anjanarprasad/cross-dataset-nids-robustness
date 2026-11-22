@@ -1,0 +1,14 @@
+Attack_Category,Test_Records,Precision,Recall,F1,Supported_By_Frozen_Model
+Bot,37,0.5075,0.9189,0.6538,True
+Brute Force -Web,1,0.0000,0.0000,0.0000,False
+Brute Force -XSS,0,0.0000,0.0000,0.0000,False
+DDOS attack-HOIC,1241,0.9612,0.9984,0.9794,True
+DDOS attack-LOIC-UDP,3,0.0000,0.0000,0.0000,False
+DDoS attacks-LOIC-HTTP,248,0.8543,0.8508,0.8525,True
+DoS attacks-GoldenEye,41,0.8222,0.9024,0.8605,True
+DoS attacks-Hulk,531,0.9825,0.9492,0.9655,True
+DoS attacks-SlowHTTPTest,27,0.7105,1.0000,0.8308,True
+DoS attacks-Slowloris,9,0.0000,0.0000,0.0000,False
+FTP-BruteForce,22,0.5116,1.0000,0.6769,True
+Infilteration,136,0.8519,0.1691,0.2822,True
+SSH-Bruteforce,121,0.9918,1.0000,0.9959,True
