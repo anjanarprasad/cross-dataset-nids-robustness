@@ -1,0 +1,10 @@
+Seed,Method,Macro_F1,Binary_PR_AUC,Exact_Type_Accuracy,Supported_Types
+51,Standard_RL,0.5137,0.9496,0.9250,9
+51,Diversity_Aware_RL,0.5664,0.9460,0.9295,9
+73,Standard_RL,0.5907,0.9585,0.9097,9
+73,Diversity_Aware_RL,0.6025,0.9536,0.9357,10
+97,Standard_RL,0.3973,0.9536,0.8542,7
+97,Diversity_Aware_RL,0.5881,0.9574,0.9159,9
+51,Random,0.4986,0.9579,0.9066,8
+73,Random,0.3756,0.9248,0.8724,6
+97,Random,0.4179,0.9563,0.8984,7
