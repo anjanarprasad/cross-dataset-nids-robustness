@@ -1,99 +1,141 @@
+# Cross-Dataset Network Intrusion Detection: Adaptation and Model Compression
 
-# Cross-Dataset Network Intrusion Detection
-### Robustness, Adaptation, and Deployment Efficiency
+This project evaluates how a machine-learning network intrusion detection system performs when a model trained on one traffic dataset is adapted to another. It also examines whether neural model compression can reduce storage and inference cost while maintaining attack detection performance.
 
-## About the Project
+A neural feature encoder is trained on **NF-UNSW-NB15-v2**. The target domain is **NF-CSE-CIC-IDS2018-v2**. Target-label selection is compared under a fixed annotation budget, followed by structured pruning, knowledge distillation, and dynamic INT8 quantization.
 
-This project studies how machine learning models used for network
-intrusion detection perform when they are tested on network traffic
-from a different environment.
+## Research objectives
 
-A model may perform well on the dataset it was trained on, but its
-performance can decrease when it is tested on another dataset.
-This can make it difficult to use the model in a real network.
+- Examine the effect of cross-dataset distribution shift on network intrusion detection.
+- Compare random selection, standard contextual-bandit reinforcement learning (RL), and diversity-aware RL for limited-label target adaptation.
+- Assess the contribution of source-trained neural embeddings to target attack classification.
+- Compare compact neural encoders using detection performance, model size, and CPU inference latency.
+- Provide reproducible experiments, reusable Python code, and automated tests.
 
-The project also looks at ways to reduce model size and processing
-time without losing too much detection performance.
+## Approach
 
-This work was carried out as part of CSC 786: Computer Science
-Problems at Dakota State University.
+The pipeline uses **43 flow-based features**: 37 retained numeric NetFlow features and six engineered flow statistics. A source-trained neural encoder produces a **32-dimensional embedding**, which is combined with the flow features to form a **75-dimensional input** to the adapted classifier.
 
-## Project Objectives
+For target adaptation, each selection method starts with the same 50 CIC records and acquires another 950 labels. A weighted logistic regression classifier is fitted on the 1,000 reviewed target records. Comparisons use three random seeds: **51, 73, and 97**.
 
-The main objectives are to:
+The encoder is also compressed using:
 
-1. Study how network intrusion detection models perform across
-   different datasets.
-2. Improve detection performance using a limited amount of
-   labeled data from the target dataset.
-3. Compare random sampling, standard reinforcement learning,
-   and diversity-aware reinforcement learning for selecting
-   target samples.
-4. Compare INT8 quantization, structured pruning, and knowledge
-   distillation for reducing model size.
-5. Measure detection performance, model size, and inference time.
+- **Structured pruning:** 64 hidden units reduced to 32 or 16.
+- **Knowledge distillation:** compact students trained using source labels and teacher outputs.
+- **Dynamic INT8 quantization:** eligible teacher linear layers quantized for CPU inference.
 
-## Datasets
+All compression variants use the same 1,000 selected CIC labels for classifier adaptation and are compared on the CIC development partition.
 
-Two public network intrusion detection datasets were used:
+## Main findings
 
-- **NF-UNSW-NB15-v2:** Used for source model training.
-- **NF-CSE-CIC-IDS2018-v2:** Used for target adaptation and evaluation.
+| Experiment | Result | Evaluation scope |
+|---|---|---|
+| Diversity-aware RL | Mean macro-F1 **0.5857** across three seeds | CIC development |
+| Standard RL | Mean binary PR-AUC **0.9539** across three seeds | CIC development |
+| Frozen FP32 model | Macro-F1 **0.5460**; binary PR-AUC **0.9478** | 20,000-record CIC holdout |
+| Pruned 16-unit encoder | Macro-F1 **0.5881**; binary PR-AUC **0.9586** | CIC development |
+| Pruned 16-unit encoder | **43.3%** smaller serialized artifacts than FP32 teacher | Deployment artifact comparison |
 
-The datasets are not included in this repository.
+Diversity-aware selection produced the strongest mean multiclass macro-F1, while standard RL achieved a slightly higher mean binary PR-AUC. The 16-unit pruned encoder gave the best measured compression-development results, with only a modest improvement in measured batch-256 CPU latency.
 
-## What Was Implemented
+**Evaluation boundary:** The adaptation and compression comparisons use CIC development data. The saved 20,000-record holdout evaluation applies **only to the frozen FP32 classifier**. That holdout is separate from the adaptation and development records but comes from the same CIC traffic collection. These results do not establish zero-shot transfer or performance in a third independent network environment.
 
-The project includes:
+Detailed tables and limitations are in [Experimental Results](docs/results.md).
 
-- Data cleaning and feature preparation.
-- Training a neural network to extract useful features.
-- Selecting target samples using reinforcement learning.
-- Training a classifier using a limited number of target labels.
-- Evaluating the model on previously unused target records.
-- Applying quantization, pruning, and knowledge distillation.
-- Comparing model accuracy, storage size, and inference time.
+## Repository structure
 
-## Main Findings
+```text
+.
+├── README.md
+├── requirements.txt
+├── notebooks/
+│   ├── 01_data_preparation.ipynb
+│   ├── 02_source_model_and_adaptation.ipynb
+│   ├── 03_evaluation_and_holdout.ipynb
+│   ├── 04_model_compression.ipynb
+│   └── 05_results_visualization.ipynb
+├── src/
+│   ├── preprocessing.py
+│   ├── feature_encoder.py
+│   ├── adaptation.py
+│   ├── classification.py
+│   ├── compression.py
+│   ├── evaluation.py
+│   └── inference.py
+├── tests/
+│   ├── test_preprocessing.py
+│   ├── test_feature_encoder.py
+│   ├── test_adaptation.py
+│   ├── test_compression.py
+│   ├── test_evaluation.py
+│   └── test_inference.py
+└── docs/
+    ├── methodology.md
+    ├── reproducibility.md
+    └── results.md
+```
 
-Diversity-aware sample selection improved multiclass attack
-recognition compared with random sampling and standard
-reinforcement learning.
+## Setup and execution
 
-The adapted model was also evaluated on 20,000 previously unused
-records from the target dataset.
+Python **3.11 or later** is recommended. Dependencies can be installed from the repository root:
 
-Among the compression methods tested, structured pruning gave
-the best observed balance between detection performance and
-model size. However, the improvement in inference speed was
-relatively small.
+```bash
+python -m pip install -r requirements.txt
+```
 
-The experiments also showed that some rare attack categories
-were difficult to detect accurately.
+The notebooks are designed for **Google Colab** with input data and trained artifacts stored in Google Drive. The default dataset paths are:
 
-## Repository Contents
+```text
+/content/drive/MyDrive/datanew/NF-UNSW-NB15-v2.csv
+/content/drive/MyDrive/datanew/NF-CSE-CIC-IDS2018-v2.csv
+```
 
-This repository will include:
+The notebooks use `MyDrive/datanew/a4_analysis/` for sampled data, saved model artifacts, and experiment results. They are organized as follows:
 
-- Jupyter notebooks used for the experiments.
-- Python scripts for the main implementation.
-- Model evaluation and compression results.
-- Figures showing the experimental findings.
-- Information needed to reproduce the experiments.
-- The final project report.
+| Notebook | Purpose |
+|---|---|
+| [01 — Data preparation](notebooks/01_data_preparation.ipynb) | Sample datasets and define the 43-feature schema |
+| [02 — Source model and adaptation](notebooks/02_source_model_and_adaptation.ipynb) | Train/load the source encoder and compare target-label selection methods |
+| [03 — Evaluation and holdout](notebooks/03_evaluation_and_holdout.ipynb) | Summarize development results and inspect saved frozen-holdout metrics |
+| [04 — Model compression](notebooks/04_model_compression.ipynb) | Train and evaluate pruned, distilled, and INT8 variants |
+| [05 — Results visualization](notebooks/05_results_visualization.ipynb) | Produce figures from saved evaluation results |
 
-## Reproducibility
+Notebook 01 prepares the cached data and feature schema. Notebook 02 creates the adapted-model outputs needed for notebooks 03 and 04. Notebook 05 uses results from the evaluation and compression stages.
 
-The experiments use fixed random seeds, documented data
-preparation steps, and saved model configurations.
+The frozen-holdout reporting in notebooks 03 and 05 requires the previously saved `cell_44R_holdout_summary.json` and `cell_44R_category_results.csv`. **The provided notebooks do not independently regenerate the frozen-holdout evaluation.**
 
-Instructions for setting up the environment and running the
-experiments will be added as the final code is organized.
+The complete execution order, artifact filenames, and experimental settings are described in the [Reproducibility Guide](docs/reproducibility.md).
 
-## Author
+## Automated tests
 
-**Anjana Rajendra Prasad**
+The `tests/` directory contains Pytest checks for data preparation, model shapes, target-label selection, compression, evaluation metrics, and the inference pipeline. The tests use synthetic records and temporary model checkpoints rather than the full traffic datasets.
 
-M.S. Computer Science (Artificial Intelligence)
+```bash
+python -m pytest tests/ -v
+```
 
-Dakota State University
+Passing the software tests checks implementation behavior; reproducing the reported dataset results additionally requires the corresponding data samples, fitted artifacts, and evaluation files.
+
+## Batch inference
+
+The inference module supports the adapted FP32 model and compressed model variants, provided their fitted artifacts are available:
+
+```bash
+python -m src.inference \
+  --data-dir /path/to/a4_analysis \
+  --input /path/to/network_flows.csv \
+  --output /path/to/predictions.csv \
+  --model teacher
+```
+
+It produces attack-category predictions and binary attack scores from network-flow inputs. See the [Reproducibility Guide](docs/reproducibility.md) for model choices and threshold handling.
+
+## Documentation
+
+- [Methodology](docs/methodology.md) — datasets, model architecture, adaptation, compression, and evaluation protocol.
+- [Experimental Results](docs/results.md) — measured results, comparisons, confidence intervals, and limitations.
+- [Reproducibility Guide](docs/reproducibility.md) — dependencies, execution order, paths, saved artifacts, and testing.
+
+## Limitations
+
+The experiments use sampled and imbalanced network-flow datasets, simulated label review from known ground-truth labels, and three acquisition seeds. Compression models were selected and evaluated on CIC development data. CPU timings depend on the Colab environment, and rare attack categories remain challenging. The independent holdout applies only to the frozen FP32 model and does not constitute evaluation on a new dataset or network environment.
