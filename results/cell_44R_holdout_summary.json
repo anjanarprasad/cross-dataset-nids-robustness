@@ -1,0 +1,22 @@
+{
+  "Evaluation": "Unseen CIC holdout",
+  "Holdout_Records": 20000,
+  "Attack_Records": 2417,
+  "Attack_Prevalence": 0.12085,
+  "Model": "Frozen_Seed51_DiversityRL_75D",
+  "Multiclass_Macro_F1": 0.545968,
+  "Exact_Attack_Type_Accuracy": 0.9176665287546545,
+  "Correct_Attack_Type_Predictions": 2218,
+  "Binary_PR_AUC": 0.947813,
+  "Binary_ROC_AUC": 0.977146,
+  "Alert_Budget_Fraction": 0.125,
+  "Alert_Budget_Records": 2500,
+  "Attacks_Found_At_Budget": 2264,
+  "Precision_At_Budget": 0.9056,
+  "Recall_At_Budget": 0.936698386429458,
+  "Predefined_Attack_Types": 13,
+  "New_Holdout_Attack_Types": [],
+  "Model_Retrained": false,
+  "Test_Labels_Used_For_Fitting": false,
+  "Evaluation_Limitation": "Unseen records from the same CIC corpus. This is not an external-dataset test."
+}
