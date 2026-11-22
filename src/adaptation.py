@@ -1,4 +1,4 @@
-"""Target-label selection and classifier adaptation for the CSC786 NIDS study."""
+"""Target-label selection and classifier adaptation for the  NIDS study."""
 
 from __future__ import annotations
 
