@@ -1,4 +1,4 @@
-"""Feature preparation and dataset splitting for the CSC786 NIDS experiments."""
+"""Feature preparation and dataset splitting for the  NIDS experiments."""
 
 from __future__ import annotations
 
