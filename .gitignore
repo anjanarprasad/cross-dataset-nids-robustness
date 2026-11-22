@@ -1,0 +1,55 @@
+
+# Python temporary files
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Google Colab and local files
+content/
+drive/
+.mount/
+*.log
+
+# Raw datasets and intermediate data
+data/raw/
+data/processed/
+data/interim/
+*.parquet
+*.feather
+
+# Large dataset files
+NF-*.csv
+*holdout_predictions*.csv
+*holdout_features*.csv
+*unseen_CIC_holdout*.csv
+
+# Temporary model files
+checkpoints/
+*.tmp
+
+# Credentials and environment settings
+.env
+.env.*
+!.env.example
+*.key
+credentials.json
+token.json
+secrets.json
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/
